@@ -9,6 +9,7 @@ There are a number of files used in these examples, feel free to take a peek at 
 
 ## Basics
 
+- pipes, redirection
 - cat, head, tail, less, more, tee
 - echo, printf
 - man (man 3 printf), whatis, apropos
@@ -38,6 +39,8 @@ this stuff
     - nested list
     - nested list
 - lists
+
+### pipes, redirection
 
 ### cat, head, tail, less, tee
 

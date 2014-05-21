@@ -4,8 +4,8 @@
 
 There are a number of files used in these examples, feel free to take a peek at them:
 
-- [numbers.txt](file/numbers.txt)
-- [numeros.txt](file/numeros.txt)
+- [numbers.txt](numbers.txt)
+- [numeros.txt](numeros.txt)
 
 ## Basics
 

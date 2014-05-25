@@ -59,6 +59,7 @@ There are a number of files used in these examples, feel free to take a peek at 
 
 ## [Miscellaneous](#miscellaneous)
 
+- single quotes vs double quotes
 - alias
 - history
 - ctrl-r (history search)
@@ -118,11 +119,57 @@ _Useful flags_
 `-n` prints line numbers with each line: `cat -n numbers.txt`
 
 ### head
-Similar to `cat`, but only prints the first n lines of a file to the console.
+Similar to `cat`, but only prints up to the first n available lines of a file to the console. By default prints up to the first 10 lines. This is useful to just see the headers of a csv files, or just to see what the contents of a data file look like.
+
+_Useful flags_
+
+`-n`: Show the first n lines instead of the default of 10:
+
+```
+> head -n 2 numbers.txt
+one
+two
+```
+
+You can also just do `head -[number] [filename]` to get the same effect:
+
+```
+> head -2 numbers.txt
+one
+two
+```
+
+You can also pass in a bunch of files at once and `head` will treat them in a sensible way:
+
+```
+> head -2 *.txt
+==> numbers.txt <==
+one
+two
+
+==> numeros.txt <==
+uno
+dos
+```
 
 ### tail
+Similar to `head`, but prints the last n lines of a file of the first n lines. This is extremely useful for peeking at the last few lines of a log file for a running service.
+
+```
+> tail -2 numbers.txt
+nineteen
+twenty
+```
+
+_Useful flags_
+
+`-n`: See `head`, same usage.
+
+`-f`: Follow. This prints the last lines of a file, but continues to listen for any new lines appended to the file. This flag is extremely useful for monitoring logs in real time for running services. `tail` will continue to print the newly added contents of the file to the console until you hit ctrl-C or otherwise kill the `tail` process.
 
 ### less
+
+A way to look through a text file without dumping all of it to the screen at once. This is useful for files that are too large to fit in a single screen height. Type 'q' to exit. Basic emacs navigation controls work inside less (ctrl-n, ctrl-p, etc).
 
 ## <a name="streams">Streams, pipes, and redirection</a>
 
@@ -149,5 +196,14 @@ _Useful flags_
 
 ## <a name="miscellaneous">Miscellaneous</a>
 
+### Single vs Double Quotes
+Double quotes will interpret the $ as the beginning of an environment variable. Single quotes will treat the $ sign as a literal $.
+
+```
+> echo -e 'My shell is $SHELL'
+My shell is $SHELL
+> echo "My shell is $SHELL"
+My shell is /bin/bash
+```
 
 #### tee

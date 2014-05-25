@@ -188,7 +188,7 @@ _Useful flags_
 
 ## <a name="searchinfiles">Searching in files</a>
 
-## <a name="searchforfiles"Searching for files</a>
+## <a name="searchforfiles">Searching for files</a>
 
 ## <a name="manipulating">Manipulating files</a>
 

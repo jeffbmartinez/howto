@@ -7,7 +7,7 @@ There are a number of files used in these examples, feel free to take a peek at 
 - [numbers.txt](numbers.txt)
 - [numeros.txt](numeros.txt)
 
-## [Printing to console (stdout)](#printing)
+## [Printing to stdout](#printing)
 
 - echo
 - cat
@@ -81,10 +81,12 @@ this stuff
     - nested list
 - lists
 
-## <a name="printing">Printing to console (stdout)</a>
+## <a name="printing">Printing to stdout</a>
+
+In case you're not familiar with stdout, it is explained in the section, [Streams, pipes, and redirection](#streams), but in the mean time, and for the purpose of this section, stdout is the shell/terminal in which you type commands. So if a program sends "hello" to stdout, it means it's displaying "hello" in the terminal for you to read.
 
 ### echo
-Just echos whatever you type into the console.
+Just echos whatever you type to stdout.
 
 ```
 > echo 'hi there'
@@ -106,12 +108,12 @@ one			two
 three
 ```
 
-Note: `-e` doesn't show up in my man page on osx 10.8.5, but still works in the console.
+Note: `-e` doesn't show up in my man page on osx 10.8.5, but still works.
 
 ### cat
 Con-**cat**-enate files. This is commonly used to print an entire text file to stdout but this tool also allows you to concatenate multiple files together, which is where the name comes from. For example:
 
-`cat numbers.txt numeros.txt` will print the entire contents of numbers.txt followed by numeros.txt to the console.  
+`cat numbers.txt numeros.txt` will print the entire contents of numbers.txt followed by numeros.txt to stdout.  
 `cat *.log` will print the contents of all .log files in the current directory
 
 _Useful flags_
@@ -119,7 +121,7 @@ _Useful flags_
 `-n` prints line numbers with each line: `cat -n numbers.txt`
 
 ### head
-Similar to `cat`, but only prints up to the first n available lines of a file to the console. By default prints up to the first 10 lines. This is useful to just see the headers of a csv files, or just to see what the contents of a data file look like.
+Similar to `cat`, but only prints up to the first n available lines of a file to stdout. By default prints up to the first 10 lines. This is useful to just see the headers of a csv files, or just to see what the contents of a data file look like.
 
 _Useful flags_
 
@@ -165,13 +167,33 @@ _Useful flags_
 
 `-n`: See `head`, same usage.
 
-`-f`: Follow. This prints the last lines of a file, but continues to listen for any new lines appended to the file. This flag is extremely useful for monitoring logs in real time for running services. `tail` will continue to print the newly added contents of the file to the console until you hit ctrl-C or otherwise kill the `tail` process.
+`-f`: Follow. This prints the last lines of a file, but continues to listen for any new lines appended to the file. This flag is extremely useful for monitoring logs in real time for running services. `tail` will continue to print the newly added contents of the file to stdout until you hit ctrl-C or otherwise kill the `tail` process.
 
 ### less
 
 A way to look through a text file without dumping all of it to the screen at once. This is useful for files that are too large to fit in a single screen height. Type 'q' to exit. Basic emacs navigation controls work inside less (ctrl-n, ctrl-p, etc).
 
 ## <a name="streams">Streams, pipes, and redirection</a>
+
+### Streams (stdin, stdout, stderr)
+
+### Pipe ( | )
+
+### Redirection
+
+**To new file or overwrite existing**
+
+**To new file or append to existing**
+
+**Use existing file as input to command**
+
+**Tee - Copies stdin contents to stdout as well as any files specified**
+
+
+- \> - Redirect to new file or overwrite existing
+- \>\> - Redirect to new file or append to existing
+- < - Read from existing file and use as input to command
+- tee - Copies stdin contents to stdout and any files specified
 
 ## <a name="help">Getting help</a>
 

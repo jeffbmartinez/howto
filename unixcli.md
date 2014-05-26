@@ -19,7 +19,7 @@ There are a number of files used in these examples, feel free to take a peek at 
 
 - Streams (stdin, stdout, stderr)
 - pipe ( | )
-- redirection
+- Stream redirection
     - \> - Redirect to new file or overwrite existing
     - \>\> - Redirect to new file or append to existing
     - < - Read from existing file and use as input to command
@@ -41,6 +41,7 @@ There are a number of files used in these examples, feel free to take a peek at 
 ## [Searching for files](#searchforfiles)
 
 - find
+- locate
 - whereis
 - tree
 
@@ -61,25 +62,10 @@ There are a number of files used in these examples, feel free to take a peek at 
 
 - single quotes vs double quotes
 - alias
+- functions
 - history
 - ctrl-r (history search)
 - xargs
-
-[jeffbmartinez.com](http://www.jeffbmartinez.com)
-
-**bold stuff**
-
-```
-no formatting     for 
-this stuff
-  here
-```
-
-- lists
-- lists
-    - nested list
-    - nested list
-- lists
 
 ## <a name="printing">Printing to stdout</a>
 
@@ -89,9 +75,9 @@ In case you're not familiar with stdout, it is explained in the section, [Stream
 Just echos whatever you type to stdout.
 
 ```
-> echo 'hi there'
+jeff$ echo 'hi there'
 hi there
-> echo "this is \n \n still one line"
+jeff$ echo "this is \n \n still one line"
 this is \n \n still one line
 ```
 
@@ -102,7 +88,7 @@ _Useful flags_
 `-e` escapes common backslash sequences for you:
 
 ```
-> echo -e "one\t\t\ttwo\n\nthree"
+jeff$ echo -e "one\t\t\ttwo\n\nthree"
 one			two
 
 three
@@ -128,7 +114,7 @@ _Useful flags_
 `-n`: Show the first n lines instead of the default of 10:
 
 ```
-> head -n 2 numbers.txt
+jeff$ head -n 2 numbers.txt
 one
 two
 ```
@@ -136,7 +122,7 @@ two
 You can also just do `head -[number] [filename]` to get the same effect:
 
 ```
-> head -2 numbers.txt
+jeff$ head -2 numbers.txt
 one
 two
 ```
@@ -144,7 +130,7 @@ two
 You can also pass in a bunch of files at once and `head` will treat them in a sensible way:
 
 ```
-> head -2 *.txt
+jeff$ head -2 *.txt
 ==> numbers.txt <==
 one
 two
@@ -158,7 +144,7 @@ dos
 Similar to `head`, but prints the last n lines of a file of the first n lines. This is extremely useful for peeking at the last few lines of a log file for a running service.
 
 ```
-> tail -2 numbers.txt
+jeff$ tail -2 numbers.txt
 nineteen
 twenty
 ```
@@ -181,7 +167,7 @@ Unix streams are a mechanism which allow you to send bytes of data from one "thi
 There are three common streams that by convention are hooked up to certain devices by default:
 
 - stdout: standard output, usually hooked up to the terminal screen
-- stderr: standard error, usually hooked up to the terminal screen
+- stderr: standard error output, usually hooked up to the terminal screen
 - stdin: standard input, usually hooked up to the keyboard
 
 You can think of these as specialized dynamic files that a program can access. Unlike writing to a normal file, however, instead of sending the characters or bytes to be written to disk for storage, writing to stdout sends the bytes to be displayed in your terminal, which show up on your monitor for your eyes to read (this is the default behavior). In fact, stdout, stderr, and stdin are treated exactly the same as files by the programs that use them.
@@ -201,7 +187,7 @@ The pipe allows you to redirect or repurpose the output of one program as the in
 Let's see a simple example here. If you are not familiar with the `grep` tool, it is explained later in the [Searching in files](#searchinfiles) section. For now, you can consider grep to be a tool that filters out lines in a file that do not contain the word provided, and keeps only those that do. So here I am supplying *numbers.txt* to `cat`, which would normally just print the entire contents to the screen. However, by using a pipe right after it, I am telling my shell to intercept that output and instead provide it to `grep 'teen'` instead. `grep` then does the work of checking each line in *numbers.txt* to see if *teen* is found. If it is found, `grep` in turn sends that line to stdout, it it is not found, it just drops it. Now the normal things happens with `grep`'s stdout, since there is no pipe, it just sends the characters to the screen.
 
 ```
-> cat numbers.txt | grep 'teen'
+jeff$ cat numbers.txt | grep 'teen'
 thirteen
 fourteen
 fifteen
@@ -214,7 +200,7 @@ nineteen
 You can stack as many pipes on top of each other as you like. Here I first grab only the teen numbers (`grep 'teen'`). Then, of those, I keep only the first three lines (`head -3`). Lastly, of this first three teens, I keep only the ones that contain the letter 'i' in them (`grep 'i'`).
 
 ```
-> cat numbers.txt | grep 'teen' | head -3 | grep 'i'
+jeff$ cat numbers.txt | grep 'teen' | head -3 | grep 'i'
 thirteen
 fifteen
 ```
@@ -224,7 +210,7 @@ This is obviously a toy example, but the point here is to show how to use a pipe
 One more thing to say about pipes is that the programs connected by the pipe actually run in parallel. The program on the left side of the pipe will send data as soon as possible and the right side will receive as soon as possible. If there is no data generated, the right side simply waits for the input to come. This allows us to do neat things like the following (recall that `tail -f` will continue to print the new contents of a file to stdout until it's terminated via ctrl-c or otherwise):
 
 ```
-> tail -f my_server.log | grep ERROR
+jeff$ tail -f my_server.log | grep ERROR
 ERROR: Oh no! Something went wrong!
 ERROR: Seriously... it's all going bad, don't deploy on Fridays!
 ...
@@ -234,21 +220,171 @@ What's cool here is that we can watch a log file in real time and ignore any lin
 
 One last thing I'd like to say is if this is your first time seeing `grep`, you don't need to `cat` a file into `grep` using a pipe. `grep` can just take a file as a normal command line argument, so the first example above can be shortened to just `grep 'teen' numbers.txt`.
 
-### Redirection
+### Stream Redirection
 
-**To new file or overwrite existing**
+There are two types of stream redirection, output redirection, and input redirection.
 
-**To new file or append to existing**
+**output redirection**
 
-**Use existing file as input to command**
+Output redirection is somewhat like a pipe in that it redirects the output of a program to another location, but instead of redirecting to another program, you redirect to another file. A file can certainly be a traditional file on the disk that you can save to to open later, but it can also be any unix file device, like those in /dev/* or a network socket, or whatever. If the OS treats it as a file (and you have the appropriate permissions), you redirect to/from it.
 
-**Tee - Copies stdin contents to stdout as well as any files specified**
+What you're able to redirect are our friends: stdout, stderr, and stdin. If you're not already familiar with streams, you can read up on them a couple section above.
 
+Say you have a program that outputs a whole lot of useful information, and you don't want to scroll up and down your terminal to read it. Or maybe you want to email the output of a command to a friend. You can instead tell the program to store it's output to a file using a redirect.
 
-- \> - Redirect to new file or overwrite existing
-- \>\> - Redirect to new file or append to existing
-- < - Read from existing file and use as input to command
-- tee - Copies stdin contents to stdout and any files specified
+The `ls -lh` command prints the contents of my current directory:
+
+```
+jeff$ ls -lh
+total 56
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    12K May 25 20:30 unixcli.md
+```
+
+To save that output to a file instead, I use the `>` redirection symbol:
+
+```
+jeff$ ls -lh > output.txt
+jeff$ cat output.txt
+total 56
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    12K May 25 20:30 unixcli.md
+```
+
+Similar to the pipe, the `>` tells the shell to intercept what was sent to stdout, and instead send it to the file after the `>` symbol, in this case, the file *output.txt*. Since *output.txt* didn't yet exist, it is created. Note well, that if *output.txt* already exists (and you have permission), it will be overwritten. Again, the existing contents of output.txt would be **deleted permanently and replaced** with the new output. If you want to append to an existing file, you should use `>>` instead. The `>>` will also create the file if it doesn't already exist.
+
+Note that this will only redirect what was sent to stdout. Anything sent to stderr goes along it's normal path. To redirect stderr, we need to use `2>` instead, which looks odd at first:
+
+```
+jeff$ ls does_not_exist/
+ls: does_not_exist/: No such file or directory
+jeff$ ls does_not_exist/ 2> error.txt
+jeff$ cat error.txt
+ls: does_not_exist/: No such file or directory
+```
+
+Remember, that last line isn't an error, it's just the printout of the contents of error.txt, which stored the redirected error output from the previous command.
+
+So what's that `2>` all about? The short version is that the streams stdin, stdout, and stderr each map to file descriptors of 0, 1, and 2, respectively. If you know don't know about file descriptors, suffice it to say they are unique numbers assigned to files by the operating system to be able to communicate with them. The `>` can take an argument of sorts, which is placed right before the `>` itself, which is a file descriptor to redirect. By default, it's 1, which is the file descriptor number for stdout. In this case, since we want to redirect stderr, I use `2>` to say "redirect file descriptor 2 (stderr)". The "default" for redirected file descriptor is 1, so saying `>` is the same as `1>`.
+
+To make things more exciting, we can redirect stdout and stderr to different files in the same line (the `.` in `ls -lh . does_not_exist/` just means current directory, so I'm asking it to display the contents of both the current directory, as well as another directory that does not exist):
+
+```
+jeff$ ls -lh . does_not_exist/
+ls: does_not_exist/: No such file or directory
+.:
+total 72
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff    47B May 25 21:05 bad.txt
+-rw-r--r--  1 jeff  jeff   476B May 25 21:05 good.txt
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    15K May 25 21:05 unixcli.md
+jeff$ ls -lh . does_not_exist/ >good.txt 2>bad.txt
+jeff$ cat good.txt
+.:
+total 64
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff    47B May 25 21:05 bad.txt
+-rw-r--r--  1 jeff  jeff     0B May 25 21:05 good.txt
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    15K May 25 21:05 unixcli.md
+jeff$ cat bad.txt
+ls: does_not_exist/: No such file or directory
+```
+
+As expected, we can see in each of good.txt and bad.txt, the respective succesful output text as well as the error output text.
+
+So what if you want to redirect both stdout and stderr to the same file now? If you tried what seems to be a logical command, you'd be disappointed and possibly confused. The following will not produce a file with both stdout and stderr's output:
+
+```
+jeff$ ls -lh . does_not_exist/ >all.txt 2>all.txt
+jeff$ cat all.txt
+.:
+total 72
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff    47B May 25 21:11 all.txt
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    16K May 25 21:11 unixcli.md
+```
+
+The stderr output is not there! Remember that redirects will overwrite whatever file was there before. So what's happening here is that `2>` wrote it's stderr output to the file (probably a bit quicker since it's not buffered), then `>` came along and wrote right over it! The fact is we cannot redirect both stdout and stderr to the same file without one stomping over the other! What to do?
+
+The fix is rather clever. The trick is to redirect stderr to stdout! Instead of having two redirects write to the same file, only the stdout redirect will write to the file, and stderr gets redirected to stdout, so stderr is indirectly written to the file through stdout. The notation is a bit odd at first, but it makes sense if you understand what's going on. Keeping in mind that the file descriptors for stdout and stderr are 1 and 2 respectively, here's how you redirect both to *all.txt*:
+
+```
+jeff$ ls -lh . does_not_exist/ >all.txt 2>&1
+jeff $ cat all.txt
+ls: does_not_exist/: No such file or directory
+.:
+total 80
+-rw-r--r--  1 jeff  jeff    12B May 20 11:13 README.md
+-rw-r--r--  1 jeff  jeff    47B May 25 21:22 all.txt
+-rw-r--r--  1 jeff  jeff   476B May 25 21:21 good.txt
+-rw-r--r--  1 jeff  jeff   132B May 20 13:55 numbers.txt
+-rw-r--r--  1 jeff  jeff   134B May 20 13:58 numeros.txt
+-rw-r--r--@ 1 jeff  jeff    17K May 25 21:22 unixcli.md
+```
+
+The last odd bit of syntax there is the `&` in `2>&1`. The `&` is required to tell the shell you are referring to the file descriptor 1, rather than the filename *1*. `2>1` (without the `&` would actually create a regular file with the name *1*, which is perfectly legal).
+
+Since that's so ugly, we have a bit of special syntax which is a shortcut for `>all.txt 2>&1`. Instead, you can just type `&>all.txt`. So, to redirect both stdout and stderr to *all.txt*, you would just type `command &>all.txt`.
+
+**Input Redirection**
+
+Just as you can control where the output ends up with redirection, you can control where the input comes from. The input redirection symbol is the `<` symbol, and is also placed to the right of the command to accept the input. The following example is a modification of the one in the section on pipes, this time using input redirection in place of `cat` and the first pipe. We again have our existing file *numbers.txt* and we want to see only those lines that contain an 'i' amongst the first three 'teen' words:
+
+```
+jeff$ grep 'teen' <numbers.txt | head -3 | grep 'i'
+thirteen
+fifteen
+```
+
+Just for fun, you can also verify that 0 is the file descriptor for stdin here, as well as verify that it is buffered on a line by line basis, with the following (hit ctrl-c to exit):
+
+```
+jeff$ cat <&0
+hello    <- type 'hello' hit enter
+hello
+echo     <- type 'echo' hit enter
+echo
+^C
+```
+
+**Input and Output Redirection**
+
+If you want to redirect both the input and output for the same command, it looks like this:
+
+```
+jeff$ grep 'teen' <numbers.txt &>teens.txt
+```
+
+**Tee**
+
+`tee`, when combined with pipes, redirects stdout (like `>`) to a file or files, but also sends a copy to stdout as well. Like a T shaped water pipe. This is useful for when you want to save a log of stdout, but still want it to show up on the screen. If you want to append to rather than delete an existing file, you should use the `-a` flag. Example:
+
+```
+jeff$ grep 'teen' numbers.txt | tee teens.txt
+```
+
+This will print the teens to the screen as well as save them in *teens.txt*. Note that this only works for stdout. If you want to save both to the same file, you can redirect stderr to stdout, then pipe as normal:
+
+```
+jeff$ ls -lh . does_not_exist/ 2>&1 | tee all.txt
+```
+
+If you need to tee stdout and stderr to separate files, the explanation is a bit more complicated, so instead I leave you with a sample command, and the term "process substitution" for which to google/bing/internet-search:
+
+```
+jeff$ ls -lh . does_not_exist/ > >(tee stdout.txt) 2> >(tee stderr.txt >&2)
+```
+
 
 ## <a name="help">Getting help</a>
 
@@ -277,9 +413,9 @@ _Useful flags_
 Double quotes will interpret the $ as the beginning of an environment variable. Single quotes will treat the $ sign as a literal $.
 
 ```
-> echo -e 'My shell is $SHELL'
+jeff$ echo -e 'My shell is $SHELL'
 My shell is $SHELL
-> echo "My shell is $SHELL"
+jeff$ echo "My shell is $SHELL"
 My shell is /bin/bash
 ```
 

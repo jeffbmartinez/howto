@@ -428,6 +428,61 @@ dd(1)                    - convert and copy a file
 
 ### grep and friends
 
+`grep` is one of my favorite command line tools. `grep` revolves around the concept of regular expressions. If you're not familiar with regular expressions, suffice it to say it's a mini-language for expressing patterns of characters. This grep intro covers simple `grep` usage, so you'll be ok without regular expression knowledge. Just know grep can be used for much more complicated pattern matching tasks than those shown here.
+
+`grep` fun fact: The name comes from it's original existance as a command within an older program called 'ed', which allowed you to find all matches for a regular expression with the command 'g/re/p'. This utility was useful enough to be pulled out into it's own little program and called 'grep'.
+
+The entire purpose of `grep` is to take its input line by line and compare each of those lines to a supplied pattern. If the pattern is found anywhere in the line, the line is sent to stdout. In a sense, `grep` will remove any lines that do **not** match the supplied pattern.
+
+Here I want to pull out the teen numbers from numbers.txt:
+
+```
+jeff$ grep 'teen' numbers.txt
+thirteen
+fourteen
+fifteen
+sixteen
+seventeen
+eighteen
+nineteen
+```
+
+`grep` is extra useful when combined with pipes, to filter out lines from another command which might produce a lot of output:
+
+```
+jeff$ ps x | grep 'firefox'
+37261   ??  R     79:28.43 /Applications/Firefox.app/Contents/MacOS/firefox -psn_0_25745548
+41829 s001  R+     0:00.00 grep --color=auto firefox
+```
+
+`grep` can be used to search through logfiles for errors, or other odd behavior. I recently decided to grep for the pattern *POST* on my website (which should only be receiving GET requests) and found that someone had been sending malicious POST requests to my box.
+
+_Useful flags_
+
+`-v` Inverts the results of the pattern matching. In other words, it only prints lines that **do not** match the pattern.
+
+`-i` Is for case insensitive pattern matching. `grep bob` will match "bob" as well as "BOB" and "bOb".
+
+`-n` Print line numbers along with the matched lines.
+
+`--color=auto` Highlights matches in your terminal, if possible. I have an alias set up in my profile so that this is the default when I type `grep` (See the `alias` command under [Miscellaneous](#miscellaneous)).
+
+`-[number]` Prints [number] lines before and after the matched line, as well as the line itself. This is useful if you want some context around your match.
+
+`-A` allows you to specify a number of lines to print after the matched line.
+
+`-B` allows you to specify a number of lines to print before the matched line.
+
+_egrep, fgrep, zgrep, zegrep, zfgrep_
+
+Please see `man grep` for details, but here's a rundown of grep's family of commands:
+
+`egrep`: "extended grep". grep itself is fairly limited in the subset of regular expression syntax it supports. `egrep` supports a few more features of regular expressions you might be used to in a full-on programming language.
+
+`fgrep`: "fast grep" or "fixed grep". For searching through large files with simple fixed patterns to match (no asterisks, etc), `fgrep` might speed up your command as the command knows ahead of time the pattern is simple.
+
+`zgrep`, `zegrep`, `zfgrep`: Similar to the above commands, but allow you to search through compressed files. It is able to look through .Z files as well as newer .gz files. Very useful for looking through old log files that automatically log rotated in a compressed state.
+
 ## <a name="searchforfiles">Searching for files</a>
 
 ### find

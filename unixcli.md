@@ -28,15 +28,12 @@ There are a number of files used in these examples, feel free to take a peek at 
 ## [Getting help](#help)
 
 - man (man 3 printf)
-- whatis
 - apropos
+- whatis
 
 ## [Searching in files](#searchinfiles)
 
-- grep
-- egrep
-- fgrep
-- zgrep
+- grep (and friends)
 
 ## [Searching for files](#searchforfiles)
 
@@ -399,13 +396,63 @@ _Useful flags_
 
 `man [section number] [command]`: If you already know you want to see a specific section of the manpage for a command, you can just pull it up: `man 3 printf`. By default, the lowest number section is pulled up.
 
+### apropos
+
+`apropos` will search for keywords in a database of descriptions for commands that might be useful to your search terms. Some examples:
+
+```
+jeff$ apropos pdf
+pdfroff(1)               - create PDF documents using groff pdfmark Q \$3\$1\$2 . nohy \$*
+snmpdf(1)                - display disk space usage on a network entity via SNMP
+jeff$ apropos ruby
+gem(1)                   - RubyGems program
+irb(1), erb(1), ri(1), rdoc(1), testrb(1) - Ruby helper programs
+ruby(1)                  - Interpreted object-oriented scripting language
+```
+
+### whatis
+
+`whatis` will compare search terms against a database of descriptions of the commands available on your system and return those it is able to find a match for. Often times it returns either too much or too little, but it's a handy tool if you need to do a quick lookup for a new command.
+
+```
+jeff$ whatis apropos
+apropos(1)               - search the whatis database for strings
+jeff$ whatis ps
+img-ps(n)                - Img, Adobe PostScript Format (ps)
+ps(1)                    - process status
+jeff$ whatis dd
+dd(1)                    - convert and copy a file
+```
+
 ## <a name="searchinfiles">Searching in files</a>
+
+### grep and friends
 
 ## <a name="searchforfiles">Searching for files</a>
 
+### find
+
+### locate
+
+### whereis
+
+### tree
+
 ## <a name="manipulating">Manipulating files</a>
 
+### cut
+
+### tr
+
+### sort
+
+### uniq
+
 ## <a name="network">Network tools</a>
+
+### ping
+### curl
+### wget
 
 ## <a name="miscellaneous">Miscellaneous</a>
 
@@ -419,4 +466,12 @@ jeff$ echo "My shell is $SHELL"
 My shell is /bin/bash
 ```
 
-#### tee
+### alias
+
+### functions
+
+### history
+
+### ctrl-r (history search)
+
+### xargs

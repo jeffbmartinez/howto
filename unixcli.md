@@ -46,8 +46,11 @@ There are a number of files used in these examples, feel free to take a peek at 
 
 - cut
 - tr
+- paste
+- join
 - sort
 - uniq
+- expand, unexpand
 
 ## [Network tools](#network)
 
@@ -499,9 +502,15 @@ Please see `man grep` for details, but here's a rundown of grep's family of comm
 
 ### tr
 
+### paste
+
+### join
+
 ### sort
 
 ### uniq
+
+### expand, unexpand
 
 ## <a name="network">Network tools</a>
 

@@ -478,7 +478,7 @@ _Useful flags_
 
 _egrep, fgrep, zgrep, zegrep, zfgrep_
 
-Please see `man grep` for details, but here's a rundown of grep's family of commands:
+Please see `man grep` for details, but here's a run down of grep's family of commands:
 
 `egrep`: "extended grep". grep itself is fairly limited in the subset of regular expression syntax it supports. `egrep` supports a few more features of regular expressions you might be used to in a full-on programming language.
 
@@ -489,6 +489,37 @@ Please see `man grep` for details, but here's a rundown of grep's family of comm
 ## <a name="searchforfiles">Searching for files</a>
 
 ### find
+
+`find` is great for when you need to quickly find a file or directory, especially if you've narrowed it down to a subfolder. `find` has a large number of options and is fairly powerful in itself, so I'm only convering one simple yet common use here:
+
+`find . | grep 'searchterm'`
+
+`find .` on itself lists all filenames in your current directory (recall that the '.' is current directory) and, recursively, subdirectories:
+
+```
+jeff$ find .
+.
+./a.txt
+./b.txt
+./stuff
+./stuff/coolStuff
+./stuff/coolStuff/bikes.txt
+./stuff/coolStuff/cars.txt
+./stuff/funStuff
+./stuff/funStuff/friends.txt
+./stuff/funStuff/rockClimbing.txt
+```
+
+If you want to find a specific file or set of files, you pipe the output into grep and match a pattern in that way:
+
+```
+jeff$ find . | grep fun
+./stuff/funStuff
+./stuff/funStuff/friends.txt
+./stuff/funStuff/rockClimbing.txt
+```
+
+Like I mentioned, `find` is very powerful, and this is just one tiny use of it. There are entire tutorials to be found online. It is capable of filtering based on various file attributes, as well as performing actions on the found files, such as deleting, or even arbitrary commands (see -exec option in man page).
 
 ### locate
 
